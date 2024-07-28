@@ -25,11 +25,11 @@ function getHeight() {
     );
 }
 window.addEventListener('load', () => {
-    // const width = getWidth();
-    // const height = getHeight();
+    const width = getWidth();
+    const height = getHeight();
 
-    const width = 340;
-    const height = 660;
+    // const width = 340;
+    // const height = 660;
     console.log(width, height);
     const config = {
         type: AUTO,
