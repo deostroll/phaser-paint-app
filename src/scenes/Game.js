@@ -15,6 +15,10 @@ export class PaintScene extends Scene {
         this.lastPenColor = 0xff0000;
         this.eraseColor = 0xffffff;
         this.penSelected = true;
+        // this.rectColorActive = 0xa5a0a4;
+        // this.rectColorInactive = 0xcfc9ce;
+        this.rectColorActive = 0xcfc9ce;        
+        this.rectColorInactive = 0xa5a0a4;
     }
 
     preload() {
@@ -43,8 +47,6 @@ export class PaintScene extends Scene {
         let xPos1b3;
         width1by3 = xPos1b3 = _1b3 * config.width;
         const xPos2b3 = _2b3 * config.width;
-        const rectBgColor = 0xa5a0a4;
-        const rectBgColor2 = 0xcfc9ce;
 
         const rectBtnHeight = 50;
 
@@ -56,25 +58,35 @@ export class PaintScene extends Scene {
         colorRect.setY(pen.y);
         colorRect.setOrigin(0.5);
         colorRect.setStrokeStyle(1.5, 0x000);
-        const r1 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, rectBgColor2)
+
+        const rc10 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
+            .setVisible(true)
             .setOrigin(0)
+        const rc11 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInActive)
+            .setOrigin(0)
+            .setVisible(false)
         const cont1 = this.add.container(0, 0, [
-            r1,
+            rc10,
+            rc11,
             pen
         ]);
-        this.input.enableDebug(r1);
+        // this.input.enableDebug(r1);
         cont1.name = 'pencil';
 
         const cont2 = this.add.container(xPos1b3, 0, [
-            this.add.rectangle(0, 0, width1by3, rectBtnHeight, rectBgColor)
-                .setOrigin(0),
+            this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
+                .setOrigin(0)
+                .setVisible(false),
+            this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInactive)
+                .setOrigin(0)
+                .setVisible(true),
             eraser
         ]);
 
         cont2.name = 'eraser';
 
         const cont3 = this.add.container(xPos2b3, 0, [
-            this.add.rectangle(0, 0, width1by3, rectBtnHeight, rectBgColor)
+            this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInactive)
                 .setOrigin(0),
             colorRect
         ]);
@@ -83,30 +95,54 @@ export class PaintScene extends Scene {
 
         [cont1, cont2, cont3].forEach(function (c) {
             // TODO write event handling for container
-            c.setSize(width1by3, 50);
-            c.setInteractive();
-            c.on('pointerup', function (evt) {
-                console.log(c.name);
+            // c.setSize(width1by3, 50);
+            // console.log(c)
+            const r = c.list[0];
+            c.setInteractive({
+                hitArea: c, hitAreaCallback: (hitArea, x, y, gameObject) => {
+                    return Phaser.Geom.Rectangle.Contains(r, x, y);
+                }
+            });
+            c.on('pointerup', function handleIconOrRectPointerUp(evt) {
+
+                const cont1List = cont1.list;
+                const cont2List = cont2.list;
+
+                const rc11 = cont1List[0];
+                const rc12 = cont1List[1];
+                const rc21 = cont2List[0];
+                const rc22 = cont2List[1];
+
+                if(c.name === 'pencil' && r.visible && this.penSelected) {
+                    // noop
+                } else if(c.name === 'eraser' && r.visible && !this.penSelected) {
+                    // noop
+                } else if(c.name === 'pencil') {
+                    // activate pencil
+                    rc11.setVisible(true);
+                    rc12.setVisible(false);
+                    // deactivate eraser
+                    rc21.setVisible(false);
+                    rc22.setVisible(true);
+                    this.penSelected = true;
+                } else if(c.name === 'eraser') {
+                    // deactive pencil
+                    rc11.setVisible(false);
+                    rc12.setVisible(true);
+                    // activate eraser
+                    rc21.setVisible(true);
+                    rc22.setVisible(false);
+
+                    this.penSelected = false;
+                }
             });
 
         });
 
         this.input.on('pointerdown', (evt) => {
-            // this.isPenDown = true;
-            console.log('pointerdown', evt.x, evt.y);
-            // if(evt.y > 100) {
-
-            // } else {
-            //     // console.log(evt.cancelBubble)
-            //     console.log('stop propagation')
-            //     console.log(evt)
-            // }
-            console.log('pen down');
             this.lastPos = { x: evt.x, y: evt.y };
             this.curve = new Phaser.Curves.Spline([evt.x, evt.y]);
         });
-
-
 
         // first time set
         this.graphics.lineStyle(this.penSize * 1.5, this.penColor);
@@ -117,7 +153,7 @@ export class PaintScene extends Scene {
             if (evt.isDown) {
                 // console.log(evt.x, evt.y);
                 // this.add.rectangle(evt.x, evt.y, this.brushSize, this.brushSize, 0xff0000);
-                console.log('pointermove - isDown', evt.x, evt.y, this.lastPos)
+                // console.log('pointermove - isDown', evt.x, evt.y, this.lastPos)
                 if (Phaser.Math.Distance.Between(evt.x, evt.y, this.lastPos.x, this.lastPos.y) > this.distance) {
                     this.lastPos = { x: evt.x, y: evt.y };
                     this.curve.addPoint(evt.x, evt.y);
@@ -129,7 +165,7 @@ export class PaintScene extends Scene {
         });
 
         this.input.on('pointerup', () => {
-            console.log('pointerup');
+            // console.log('pointerup');
             this.graphics.save();
             this.curve = null;
         });
@@ -149,8 +185,9 @@ export class PaintScene extends Scene {
             .setOrigin(0.5)
             .setStrokeStyle(1, 0x0);
         // console.log(bar.getBounds());
-        const control = this.add.circle(config.width / 2, 25, 10, rectBgColor)
-            .setOrigin(0.5);
+        const control = this.add.circle(config.width / 2, 25, 10, this.rectColorInactive)
+            .setOrigin(0.5)
+            .setStrokeStyle(1, 0x0)
 
         const rbck = this.add.rectangle(0, 0, config.width, 50, 0xf567dd)
             .setOrigin(0);
@@ -173,9 +210,9 @@ export class PaintScene extends Scene {
 
         // initialize the slider control to current pen size
         // control.x = Phaser.Math.Interpolation.Linear([barBounds.x, barBounds.x + barBounds.width], this.penSize/this.penSizeMax);
-        console.log(barBounds)
+        // console.log(barBounds)
         control.x = PMath.Interpolation.Linear([barBounds.x - 10, barBounds.x + barBounds.width - 10], this.penSize / this.penSizeMax);
-        console.log(control.x)
+        // console.log(control.x)
         // console.log(Phaser);
         // // slider.setSize(400, 32);
         // slider.setInteractive({ draggable: true });

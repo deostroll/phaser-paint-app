@@ -38,7 +38,11 @@ window.addEventListener('load', () => {
         backgroundColor: '#ffffff',
         scene: [
             MainGame
-        ]
+        ],
+        scale: {
+            mode: Scale.FIT,
+            autoCenter: Scale.CENTER_BOTH
+        },
     };
     console.log('Game Config:', config);
     new Game(config);
