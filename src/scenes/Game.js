@@ -59,20 +59,34 @@ export class PaintScene extends Scene {
         colorRect.setOrigin(0.5);
         colorRect.setStrokeStyle(1.5, 0x000);
 
-        const rc10 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
-            .setVisible(true)
-            .setOrigin(0)
-            .setName('c1ra')
-        const rc11 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInActive)
-            .setOrigin(0)
-            .setVisible(false)
-            .setName('c1ri');
+        // const rc10 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
+        //     .setVisible(true)
+        //     .setOrigin(0)
+        //     .setName('c1ra')
+        // const rc11 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInactive)
+        //     .setOrigin(0)
+        //     .setVisible(false)
+        //     .setName('c1ri');
+        // const cont1 = this.add.container(0, 0, [
+        //     rc10,
+        //     rc11,
+        //     pen
+        // ]);
+        // this.input.enableDebug(r1);
+        
         const cont1 = this.add.container(0, 0, [
-            rc10,
-            rc11,
+            this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
+                .setVisible(true)
+                .setOrigin(0)
+                .setName('c1ra'),
+            this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInactive)
+                .setOrigin(0)
+                .setVisible(false)
+                .setName('c1ri'),
             pen
         ]);
         // this.input.enableDebug(r1);
+        
         cont1.name = 'pencil';
 
         const cont2 = this.add.container(xPos1b3, 0, [
