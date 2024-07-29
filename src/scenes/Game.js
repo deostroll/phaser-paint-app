@@ -62,9 +62,11 @@ export class PaintScene extends Scene {
         const rc10 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
             .setVisible(true)
             .setOrigin(0)
+            .setName('c1ra')
         const rc11 = this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInActive)
             .setOrigin(0)
             .setVisible(false)
+            .setName('c1ri');
         const cont1 = this.add.container(0, 0, [
             rc10,
             rc11,
@@ -76,10 +78,12 @@ export class PaintScene extends Scene {
         const cont2 = this.add.container(xPos1b3, 0, [
             this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorActive)
                 .setOrigin(0)
-                .setVisible(false),
+                .setVisible(false)
+                .setName('c2ra'),
             this.add.rectangle(0, 0, width1by3, rectBtnHeight, this.rectColorInactive)
                 .setOrigin(0)
-                .setVisible(true),
+                .setVisible(true)
+                .setName('c2ri'),
             eraser
         ]);
 
