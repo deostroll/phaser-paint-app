@@ -39,6 +39,7 @@ window.addEventListener('load', () => {
         scene: [
             MainGame
         ],
+        pixelArt: true,
         scale: {
             mode: Scale.FIT,
             autoCenter: Scale.CENTER_BOTH
